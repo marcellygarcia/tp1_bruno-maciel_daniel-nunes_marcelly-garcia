@@ -25,14 +25,15 @@ commands = (
         """
             Consulta 7
         """)
-def get_info(commandCode):
+def get_info(commandCode : int):
     conn = None
     try:
     
+        
         conn = psycopg2.connect(params) 
         cur = conn.cursor();
-        cur.execute(commands[commandCode])
-        print("Number of parts: ",cur.rowcount)
+        cur.execute(commands[commandCode-1])
+        
         row = cur.fetchone()
         while row is not None:
             print(row)
