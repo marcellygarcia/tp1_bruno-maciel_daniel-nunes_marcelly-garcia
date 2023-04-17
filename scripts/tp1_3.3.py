@@ -28,8 +28,6 @@ commands = (
 def get_info(commandCode : int):
     conn = None
     try:
-    
-        
         conn = psycopg2.connect(params) 
         cur = conn.cursor();
         cur.execute(commands[commandCode-1])

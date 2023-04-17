@@ -131,3 +131,4 @@ dmypy.json
 # local folders
 postgres-data/
 .tp1/
+.vscode/
