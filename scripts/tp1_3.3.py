@@ -1,5 +1,5 @@
 import psycopg2
-
+import sys
 params = "dbname=postgres host=localhost user=postgres password=postgres port=5432"
 
 codprod = ""
@@ -50,7 +50,19 @@ commands = (
 	
         """,
         """
-            Consulta 6
+            select distinct c.id,c.name, rx.media from (select distinct p.asinproduto,id_categoria  from produtocategoria p 
+            ) px 
+            join (select
+                p2.asinproduto,avg(p2.classficacao) as media 
+                from
+                    reviews p2
+                where p2.classficacao > 0 and util > 0 and votos > 0 
+                group by p2.asinproduto
+                ) rx on rx.asinproduto = px.asinproduto
+            left join categoria c on  px.id_categoria =c.id
+            order by 3 desc, 1, 2
+            fetch first 5 rows only
+
         """,
         """
             select x.pgroup,x.pos,x.cliente,x.num_comentarios from 
@@ -107,6 +119,8 @@ if __name__ == '__main__':
     
     print()
     option = int(input("Digite a opção desejada: "))
+    if option == 8:
+        sys.exit()
     param = ""
     print("Opção",str(option),"selecionada")
     if option in [1,2,3]:
