@@ -75,8 +75,9 @@ def get_info(commandCode : int,param):
         command = commands[commandCode-1]
         if (commandCode in [1,2,3]):
             command = command.replace("%s","'"+str(param)+"'")
-        cur.execute(command,{param,param})
-        
+        cur.execute(command)
+        colnames = [desc[0] for desc in cur.description]
+        print(colnames)
         row = cur.fetchone()
         while row is not None:
             print(row)
