@@ -18,19 +18,53 @@ commands = (
 
         """,
         """
-            Consulta 3
+            select to_char(r.data::DATE,'dd/mm/yyyy') , to_char(avg(r.classficacao), '99.99') as media  from reviews r
+            left join produto p on p.asin = r.asinproduto 
+            where asinproduto = %s
+            group by 1
+            order by 1
         """, 
         """
-            Consulta 4
+            select x.pgroup,x.pos,x.asin,x.salesrank from 
+        (select 
+            row_number () over (partition by pgroup order by pgroup) as pos,
+                p2.asin,p2.pgroup,salesrank 
+            from
+                produto p2
+            where p2.salesrank >0
+            order by p2.salesrank
+        ) x
+        where x.pos<=10
+        order by x.pgroup,x.pos,x.salesrank
+
         """,
         """
-            Consulta 5
+            select
+            p2.asinproduto,avg(p2.classficacao) 
+            from
+                reviews p2
+            where p2.classficacao > 0 and util > 0 and votos > 0
+            group by asinproduto
+            order by 2 desc
+            limit 10
+	
         """,
         """
             Consulta 6
         """,
         """
-            Consulta 7
+            select x.pgroup,x.pos,x.cliente,x.num_comentarios from 
+            (select 
+                row_number () over (partition by pgroup order by count(p2.id) desc) as pos,
+                p2.cliente,p3.pgroup, count(p2.id) as num_comentarios
+                from
+                    reviews p2
+                left join produto p3 on p3.asin = p2.asinproduto 
+                group by 3,2
+                order by 3,4 desc,1,2
+            ) x
+            where x.pos<=10
+            order by x.pgroup,x.num_comentarios desc,x.pos,x.cliente
         """)
 
 def get_info(commandCode : int,param):
@@ -57,7 +91,8 @@ def get_info(commandCode : int,param):
 
 
 if __name__ == '__main__':
-   
+   option = 0   
+   while(option!=8):
     print("------------------- Trabalho Prático - Bancos de Dados I -------------------")
     print()
     print("1. Listar os 5 comentários mais úteis e com maior avaliação e os 5 comentários mais úteis e com menor avaliação")
@@ -67,6 +102,8 @@ if __name__ == '__main__':
     print("5. Listar os 10 produtos com a maior média de avaliações úteis positivas por produto")
     print("6. Listar a 5 categorias de produto com a maior média de avaliações úteis positivas por produto")
     print("7. Listar os 10 clientes que mais fizeram comentários por grupo de produto")
+    print("8. Sair")
+    
     print()
     option = int(input("Digite a opção desejada: "))
     param = ""
